@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Manager</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin-top: 0;
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            width: calc(100% - 22px);
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f9f9f9;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>API Manager</h1>
+        <form id="get-form">
+            <button type="button" onclick="getData()">Get Data</button>
+        </form>
+
+        <form id="post-form">
+            <h2>Add Device</h2>
+            <input type="text" id="post-name" placeholder="Name" required>
+            <button type="button" onclick="postData()">Add Device</button>
+        </form>
+
+        <form id="delete-form">
+            <h2>Delete Device</h2>
+            <input type="text" id="delete-name" placeholder="Name" required>
+            <button type="button" onclick="deleteData()">Delete Device</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const BASE_URL = "https://new-sigma-nine.vercel.app";
+
+        async function getData() {
+            try {
+                const response = await fetch(`${BASE_URL}/data`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `GET /data success: <pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Error:', error); // In lỗi ra console để kiểm tra chi tiết
+                document.getElementById('result').innerHTML = `<span class="error">GET /data failed: ${error.message}</span>`;
+            }
+        }
+
+        async function postData() {
+            const name = document.getElementById('post-name').value;
+
+            const payload = {
+                name: `${name}`
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/data`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `POST /data success: <pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `<span class="error">POST /data failed: ${error.message}</span>`;
+            }
+        }
+
+        async function deleteData() {
+            const name = document.getElementById('delete-name').value;
+
+            const payload = {
+                name: name
+            };
+
+            try {
+                const response = await fetch(`${BASE_URL}/data`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('result').innerHTML = `DELETE /data success: <pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `<span class="error">DELETE /data failed: ${error.message}</span>`;
+            }
+        }
+    </script>
+</body>
+</html>
